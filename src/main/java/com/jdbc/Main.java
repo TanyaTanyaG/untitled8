@@ -10,17 +10,16 @@ import java.sql.Statement;
 
 
 public abstract class Main {
-    private static final String URL = "jdbc:mysql://localhost:3306/mysql?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/usersdb?useSSL=false&serverTimezone=UTC";
     private static final String LoginName = "root";
     private  static final String Password = "rootroot";
 
-    protected Main() {
+    public  Main() {
     }
 
     public static void main(String[] args) throws SQLException {
         Connection connection = null;
-        Driver driver;
-        driver = new FabricMySQLDriver();
+        Driver driver = new FabricMySQLDriver ( );
         try {
             DriverManager.registerDriver(driver);
         }
@@ -50,17 +49,27 @@ public abstract class Main {
     }
 
 
-    public static void executeUpdate(String query) throws SQLException {
-        Connection connection = null;
-        assert false;
-        Statement statement = connection.createStatement();
-        // Для Insert, Update, Delete
-        statement.executeUpdate (query);
+    private static void executeUpdate(String query) {
+        Connection connection;
+        try {
+            connection = DriverManager.getConnection(URL, LoginName, Password);
+            Statement statement = getStatement (connection);
+            /* Для Insert, Update, Delete */
+            statement.executeUpdate (query);
+        }
+        catch (SQLException ex){
+            System.out.println("Не удалось создать соединение!");
+
+        }
+
+    }
+
+    private static Statement getStatement(Connection connection) throws SQLException {
+        return connection.createStatement ( );
     }
 
 
-
-    private static void createCustomerTable() throws SQLException {
+    private static void createCustomerTable() {
         String customerTableQuery = "CREATE TABLE customers " +
                 "(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)";
         String customerEntryQuery = "INSERT INTO customers " +
